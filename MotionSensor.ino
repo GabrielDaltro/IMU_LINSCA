@@ -6,12 +6,14 @@
 #define  sendTime  5 // em milisegundos
 int cont = 0;
 /****************************************VARIÁVEIS DO FILTRO de KALMAN****************************************/
-float R_1 = 1;
-float R_2 = 1;
-float R_MAG = 0.7;
-float Q_value = 1;
+float R_1 = 1; // acelerômetro
+float R_2 = 1; // giroscópio
+float Q_value = 0.5; // modelo do sistema dinâmico
+float R_roll = 0.01;  // magnetômetro
+float R_2_Roll = 0.01; // roll do giroscópio
+float Q_value_roll = 5; // modelo do sistema dinâmico 
 float A[2][2] = {{1,0.005},{0, 1}};
-float X_init_roll[2][1] = {{180},{0}};
+float X_init_roll[2][1] = {{0},{0}};
 float X_init_pitch[2][1] = {{0},{0}};
 float X_init_yaw[2][1] = {{0},{0}};
 float P_init[2][2] = {{0.1,0.1},{0.1,0.1}};
@@ -24,9 +26,9 @@ float X_yaw[2][1];
 IMU imu;
 MPU9250 mpu9250;
 
-KalmanFilter FilterRoll  (A, X_init_roll,P_init,  R_MAG,  R_2, Q_value,  H_1,  H_2);
-KalmanFilter FilterPitch (A, X_init_pitch,P_init,  R_1,  R_2, Q_value,  H_1,  H_2);
-KalmanFilter FilterYaw   (A, X_init_yaw,P_init,  R_1,  R_2, Q_value,  H_1,  H_2);
+KalmanFilter FilterRoll  (A, P_init,  R_roll,  R_2_Roll, Q_value_roll,  H_1,  H_2);
+KalmanFilter FilterPitch (A, P_init,  R_1,  R_2, Q_value,  H_1,  H_2);
+KalmanFilter FilterYaw   (A, P_init,  R_1,  R_2, Q_value,  H_1,  H_2);
 /*************************************** VARIAVEIS PARA CONTROLE DE TEMPO*************************************/
 unsigned long previousTime = 0;
 unsigned long previousTime2 = 0;
@@ -40,12 +42,20 @@ void setup()
 {
      Serial.begin(250000); 
      mpu9250.begin(2,500); 
-      Serial.println ();
-      Serial.println ();
-      Serial.println ();
-     mpu9250.doReadings();  
-     imu.setR_GyBegin(mpu9250.getMeasures()); 
+     Serial.println ();
+     Serial.println ();
+     Serial.println ();
      
+     mpu9250.doReadings();  
+     imu.setR_GyBegin(mpu9250.getMeasures());
+
+     X_init_roll[0][0] =  imu.getcompRoll();
+     X_init_pitch[0][0] = imu.getAccPitch();
+     X_init_yaw[0][0] =   imu.getAccYaw();
+     
+     FilterRoll.setXinit( X_init_roll); // Os valores de CompasRoll, AccPitch e AccYaw foram calculados na função imu.setR_GyBegin();
+     FilterPitch.setXinit(X_init_pitch);
+     FilterYaw.setXinit(X_init_yaw);
 } 
 void loop() 
 {     
