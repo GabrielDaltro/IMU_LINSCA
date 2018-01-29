@@ -1,6 +1,6 @@
 #ifndef KALMANFILTER_H
 #define KALMANFILTER_H
-
+#include <arduino.h>
 #define USER_POS_ANG
 
 #define TESTE 1
@@ -52,7 +52,10 @@ class KalmanFilter {
        // retorna o valor do módulo de um número
        float modulo (float num) 
        {
-        if(num>0) return num; else return -1*num;
+        if(num>0) 
+          return num; 
+        else 
+          return -1*num;
        }
 
 

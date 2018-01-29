@@ -40,12 +40,20 @@ void KalmanFilter::applyFilter(float Z_1, float Z_2)
     float I_less_K_times_H[2][2];
 
     #ifdef  USER_POS_ANG // caso as medições de posição sejam ângulos
-      if (Z_1 > Z_2)
+      if (Z_1 > Z_2) // Z1 está proximo de 360 e Z2 passou de 360 e passou a ser próximo de 0
       {
-        if (modulo(Z_1 - (Z_2 + 2*3.1416)) < 0.1745) 
+        if (modulo(Z_1 - (Z_2 + 2*3.1416)) < 0.5236) // a diferença entre ele é menor que 30 graus?
         {
+//          Serial.println();
+//          Serial.println("************************");
+//          Serial.print (Z_1); Serial.print (",");  Serial.println (Z_2);
+//          Serial.println("************************");
           Z[0][0] = Z_1;
           Z[1][0] = Z_2 + 2*3.1416;
+//          Serial.println();
+//          Serial.println("************************");
+//          Serial.print (Z[0][0]); Serial.print (",");  Serial.println (Z[1][0]);
+//          Serial.println("************************");
         }
         else
         {
@@ -53,14 +61,34 @@ void KalmanFilter::applyFilter(float Z_1, float Z_2)
               Z[1][0] = Z_2;
         }
       }
-      else
+      else if (Z_2 > Z_1)
       {
-        if (modulo(Z_2 - (Z_1 + 2*3.1416)) < 0.1745) // MOSULO DA DIFERENÇA?
+        if (modulo(Z_2 - (Z_1 + 2*3.1416)) < 0.5236)  
         {
+//          Serial.println();
+//          Serial.println("************************");
+//          Serial.print (Z_1); Serial.print (",");  Serial.println (Z_2);
+//          Serial.println("************************");
           Z[0][0] = Z_1 + 2*3.1416;
           Z[1][0] = Z_2;
+//          Serial.println("************************");
+//          Serial.print (Z[0][0]); Serial.print (",");  Serial.println (Z[1][0]);
+//          Serial.println("************************");
         }
         else
+        {
+              Z[0][0] = Z_1;
+              Z[1][0] = Z_2;
+        }
+      }
+      else // Z1 == Z2
+      {
+        if ((X[0][0] > 5.2360)&&(Z_1 >= 0)) // Z1 e Z2 são iguais, maiores ou iguais a zero e na interação passada, ambas eram maiores que 360
+        {
+          Z[0][0] = Z_1 + 2*3.1416;
+          Z[1][0] = Z_2 + 2*3.1416;
+        }
+        else 
         {
               Z[0][0] = Z_1;
               Z[1][0] = Z_2;
