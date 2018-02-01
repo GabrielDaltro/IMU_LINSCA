@@ -1,5 +1,9 @@
 #include "IMU.h"
 
+IMU::IMU ()
+{
+  setT_Gy (0.005); // Inicilamente o tempo de amostragem é definido como 0.005 e deve ser atualizado a cada interação
+}
 void IMU::update_orientation_accel(const float* ptrAcx, const float* ptrAcy, const float* ptrAcz)
 {
   float cos_theta = sqrt((*ptrAcx)*(*ptrAcx) + (*ptrAcy)*(*ptrAcy));
@@ -164,6 +168,10 @@ void IMU::setR_Gy (float roll, float pitch, float yaw)
     R_Gy[2][1] =    cos_phi*sin_theta*sin_psi + sin_phi*cos_psi;
     R_Gy[2][2] =    cos_phi*cos_theta;
 }
+void IMU::setT_Gy(float tgy)
+{
+  T_Gy = tgy;
+}
 void IMU::setR_GyBegin(const float raw[9])
 {
   update_orientation_accel(&(raw[0]),&(raw[1]),&(raw[2])); // 200 uS 
@@ -225,14 +233,3 @@ void IMU::printOrientation(void)
    Serial.print(compRoll*180/3.14);
    Serial.print (",");   
 }
-
-
-
-
-
-
-
-
-
-
-

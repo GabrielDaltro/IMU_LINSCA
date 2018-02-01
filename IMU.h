@@ -12,7 +12,7 @@
 #include <math.h>
 #include <Arduino.h>
 
-#define T_Gy 0.005
+//#define T_Gy 0.005
 #define DX 3
 #define DY 3
 #define ND -(1<<16)
@@ -20,6 +20,9 @@
 class IMU
 {
     public:
+  
+        IMU();
+      
         void updateOrientation (const float raw[9]); // AcX, AcY,AcZ, GyX,GyY,GyZ, Mx, My, Mz
         void update_orientation_compass (const float raw[9], const float* ptrPitch, const float* ptrYaw);
         
@@ -35,6 +38,8 @@ class IMU
         void setR_GyBegin(const float raw[9]);
         void printOrientation(void);
 
+        void setT_Gy(float tgy); 
+
     private:
         float AccRoll;
         float AccPitch;
@@ -44,8 +49,8 @@ class IMU
         float GyYaw;
         float compRoll;
         float R_Gy[3][3]  = {{1,0,0},{0,1,0},{0,0,1}};
+        float T_Gy; // período de amostragem
       
-
         void update_orientation_accel(const float* ptrAcx, const float* ptrAcy, const float* ptrAcz);
         void update_orientation_gy(const float* ptrGyx, const float* ptrGyy, const float* ptrGyz);
         

@@ -100,15 +100,15 @@ void loop()
 
 
                    Serial.print ((X_roll[0][0]*180/3.14)-21);
-                   Serial.print (",");
+                   Serial.print ("X");
                    Serial.print (X_pich[0][0]*180/3.14);
-                   Serial.print (",");
+                   Serial.print ("Y");
                    Serial.print (X_yaw[0][0]*180/3.14); 
-                   Serial.print (",");
-                   Serial.print(mpu9250.getGyZ());  
-                   Serial.print (",   T:");
+                   Serial.println ("Z");
+                   //Serial.print(mpu9250.getGyZ());  
+                   //Serial.print (",   T:");
                    currentTime3 = micros();
-                   Serial.println (currentTime3 - previousTime3);
+                   //Serial.println (currentTime3 - previousTime3);
                    
                   // if ((currentTime - previousTime) > (sampleTime + sampleTime/100)) {
                   //    Serial.print ("Muito Longo: ");
@@ -117,27 +117,6 @@ void loop()
              /********************************************************************************/       
                 previousTime =  micros();
               }
-              
-//              currentTime2 = millis();
-//              if (currentTime2 - previousTime2 >= sendTime)
-//              {
-                /********************************************************************************/  
-//                   Serial.print ((X_roll[0][0]*180/3.14)-21);
-//                   Serial.print (",");
-//                   Serial.print (X_pich[0][0]*180/3.14);
-//                   Serial.print (",");
-//                   Serial.print (X_yaw[0][0]*180/3.14); 
-//                   Serial.print (",");
-//                   Serial.print(mpu9250.getGyX());   
-//                   //mpu9250.exibeLeituras(); 
-//                   Serial.print (",");
-//                   Serial.print(mpu9250.getGyY());   
-//                   Serial.print (",");
-//                   Serial.println(mpu9250.getGyZ());   
-                   
-                /********************************************************************************/
-//                previousTime2 = millis();     
-//              } 
         
 }
 

@@ -33,11 +33,11 @@ void MPU9250::setGyScale (int scale)
 {
     switch (scale)
     {
-        case 250:  sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,0); GyScale = (float) 1.0/131.0; Serial.println ("Gy Scale 250");  break;
-        case 500:  sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,8); GyScale = (float) 1.0/65.5;  Serial.println ("Gy Scale 500");  break;
-        case 1000: sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,16);GyScale = (float) 1.0/32.8;  Serial.println ("Gy Scale 1000"); break;
-        case 2000: sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,24);GyScale = (float) 1.0/16.4;  Serial.println ("Gy Scale 2000"); break;
-        default:   sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,0); GyScale = (float) 1.0/131.0; Serial.println ("Gy Scale 250");  break;
+        case 250:  sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,0); GyScale = (float) 1.0/131.0; /*Serial.println ("Gy Scale 250");*/  break;
+        case 500:  sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,8); GyScale = (float) 1.0/65.5;  /*Serial.println ("Gy Scale 500");*/  break;
+        case 1000: sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,16);GyScale = (float) 1.0/32.8;  /*Serial.println ("Gy Scale 1000");*/ break;
+        case 2000: sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,24);GyScale = (float) 1.0/16.4;  /*Serial.println ("Gy Scale 2000");*/ break;
+        default:   sendbyte(MPU9250_ACC_GY_ADDRESS,MPU9250_GYRO_CONFIG,0); GyScale = (float) 1.0/131.0; /*Serial.println ("Gy Scale 250");*/  break;
     }
 }
 void MPU9250::setAccScale(int scale)
