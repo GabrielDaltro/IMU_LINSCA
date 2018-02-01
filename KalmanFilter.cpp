@@ -85,8 +85,15 @@ void KalmanFilter::applyFilter(float Z_1, float Z_2)
       {
         if ((X[0][0] > 5.2360)&&(Z_1 >= 0)) // Z1 e Z2 são iguais, maiores ou iguais a zero e na interação passada, ambas eram maiores que 360
         {
+//          Serial.println();
+//          Serial.println("************************");
+//          Serial.print (Z_1); Serial.print (",");  Serial.println (Z_2);
+//          Serial.println("************************");
           Z[0][0] = Z_1 + 2*3.1416;
           Z[1][0] = Z_2 + 2*3.1416;
+//          Serial.println("************************");
+//          Serial.print (Z[0][0]); Serial.print (",");  Serial.println (Z[1][0]);
+//          Serial.println("************************");
         }
         else 
         {
