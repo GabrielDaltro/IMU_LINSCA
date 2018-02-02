@@ -2,8 +2,8 @@
 #include "KalmanFilter.h"
 #include "IMU.h"
 /*************************************** VARIAVEIS PARA CONTROLE DE TEMPO*************************************/
-#define idealSampleTime  3000 // em micro segundos
-#define  sendTime  5 // em milisegundos
+
+#define  sendTime  6 // em milisegundos
 int cont = 0;
 
 unsigned long realSampleTime = 0;
@@ -95,7 +95,11 @@ void loop()
                                     
                    // Calcula o pitch e o yaw do acelerômetro
                    // Calcula o roll, pitch e yaw do giroscópio
-                   imu.setT_Gy (realSampleTime);                  
+                   imu.setT_Gy (realSampleTime/1000000.0);  
+                   A[0][1] = realSampleTime/1000000.0;
+                   FilterRoll.setA (A);
+                   FilterPitch.setA (A);  
+                   FilterYaw.setA (A);              
                    imu.updateOrientation(mpu9250.getMeasures());
              
                    // Faz a fusão do pitch e do yaw entre acelerômetro e giroscópio

@@ -2,7 +2,7 @@
 
 IMU::IMU ()
 {
-  setT_Gy (0.005); // Inicilamente o tempo de amostragem é definido como 0.005 e deve ser atualizado a cada interação
+  setT_Gy (idealSampleTime/1000000.0); // Inicilamente o tempo de amostragem é definido como 0.005 e deve ser atualizado a cada interação
 }
 void IMU::update_orientation_accel(const float* ptrAcx, const float* ptrAcy, const float* ptrAcz)
 {
