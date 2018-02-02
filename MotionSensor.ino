@@ -1,10 +1,28 @@
 #include "MPU9250.h"
 #include "KalmanFilter.h"
 #include "IMU.h"
-
-#define sampleTime  2000 // em micro segundos
-#define  sendTime  1000 // em milisegundos
+/*************************************** VARIAVEIS PARA CONTROLE DE TEMPO*************************************/
+#define idealSampleTime  3000 // em micro segundos
+#define  sendTime  5 // em milisegundos
 int cont = 0;
+
+unsigned long realSampleTime = 0;
+
+unsigned long previousTime = 0;
+unsigned long previousTime2 = 0;
+unsigned long currentTime = 0;
+unsigned long currentTime2 = 0;
+
+unsigned long T1 = 0;
+unsigned long T2 = 0;
+
+unsigned long calculationTime = 0;
+unsigned long calculationTime_begin = 0;
+unsigned long calculationTime_end = 0;
+
+unsigned long timePrint = 0;
+unsigned long timePrint_begin = 0;
+unsigned long timePrint_end = 0;
 /****************************************VARIÁVEIS DO FILTRO de KALMAN****************************************/
 float R_1 = 1; // acelerômetro
 float R_2 = 1; // giroscópio
@@ -12,7 +30,7 @@ float Q_value = 0.5; // modelo do sistema dinâmico
 float R_roll = 0.01;  // magnetômetro
 float R_2_Roll = 0.01; // roll do giroscópio
 float Q_value_roll = 5; // modelo do sistema dinâmico 
-float A[2][2] = {{1,0.005},{0, 1}};
+float A[2][2] = {{1,idealSampleTime/1000000.0},{0, 1}};
 float X_init_roll[2][1] = {{0},{0}};
 float X_init_pitch[2][1] = {{0},{0}};
 float X_init_yaw[2][1] = {{0},{0}};
@@ -29,22 +47,7 @@ MPU9250 mpu9250;
 KalmanFilter FilterRoll  (A, P_init,  R_roll,  R_2_Roll, Q_value_roll,  H_1,  H_2);
 KalmanFilter FilterPitch (A, P_init,  R_1,  R_2, Q_value,  H_1,  H_2);
 KalmanFilter FilterYaw   (A, P_init,  R_1,  R_2, Q_value,  H_1,  H_2);
-/*************************************** VARIAVEIS PARA CONTROLE DE TEMPO*************************************/
-unsigned long previousTime = 0;
-unsigned long previousTime2 = 0;
-unsigned long currentTime = 0;
-unsigned long currentTime2 = 0;
 
-unsigned long T1 = 0;
-unsigned long T2 = 0;
-
-unsigned long calculationTime = 0;
-unsigned long calculationTime_begin = 0;
-unsigned long calculationTime_end = 0;
-
-unsigned long timePrint = 0;
-unsigned long timePrint_begin = 0;
-unsigned long timePrint_end = 0;
 /************************************************************************************************************/
 
 void setup()
@@ -54,8 +57,12 @@ void setup()
      Serial.println ();
      Serial.println ();
      Serial.println ();
+     Serial.println ();
+     Serial.println ();
+     Serial.println ();
      
      mpu9250.doReadings();  
+     T1 = micros();
      imu.setR_GyBegin(mpu9250.getMeasures());
 
      X_init_roll[0][0] =  imu.getcompRoll();
@@ -68,21 +75,27 @@ void setup()
      
      timePrint = 0;
      calculationTime = 0;
-     T1 = micros();
      previousTime = micros();
-     previousTime2 = micros ();
+     previousTime2 = millis();
 } 
 void loop() 
 {     
               currentTime = micros();
-              if (currentTime - previousTime >= (3000 - timePrint - calculationTime ))
+              if (currentTime - previousTime >= (idealSampleTime - timePrint - calculationTime ))
               {
+                    
               /********************************************************************************/    
                    calculationTime_begin = micros(); 
                    mpu9250.doReadings();  
+                   Serial.print ("T: ");
+                   T2 = micros();
+                   realSampleTime = T2 - T1;
+                   Serial.println (realSampleTime);
+                   T1 = T2;
                                     
                    // Calcula o pitch e o yaw do acelerômetro
-                   // Calcula o roll, pitch e yaw do giroscópio                  
+                   // Calcula o roll, pitch e yaw do giroscópio
+                   imu.setT_Gy (realSampleTime);                  
                    imu.updateOrientation(mpu9250.getMeasures());
              
                    // Faz a fusão do pitch e do yaw entre acelerômetro e giroscópio
@@ -110,17 +123,16 @@ void loop()
                    calculationTime = calculationTime_end - calculationTime_begin;
 
 
-                   Serial.print ("T: ");
-                   T2 = micros();
-                   Serial.println (T2 - T1);
-                   T1 = T2;
+                   
              /********************************************************************************/       
                 previousTime =  micros();
               }
 
+
               currentTime2 = millis();              
               if (currentTime2 - previousTime2 >= sendTime)
               {
+               
                 timePrint_begin = micros ();
                /********************************************************************************/ 
                 //mpu9250.exibeLeituras();     

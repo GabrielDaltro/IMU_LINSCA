@@ -25,6 +25,11 @@ void KalmanFilter::setXinit(float X_init[][1])
 {
   matCopy_2x1(X_init,X); // X recebe X_init
 }
+ void KalmanFilter::setA(float a[][2])
+ {
+    matCopy_2x2(a,A);
+    mat_2x2_transp (A,A_transp);  
+ }
 void KalmanFilter::applyFilter(float Z_1, float Z_2)
 {
     float A_times_P[2][2];

@@ -7,12 +7,13 @@
 
 class KalmanFilter {
     public:
-        KalmanFilter (float a[][2], float X_init[][1], float P_init[][2], float R_1, float R_2, float Q_value, float H_1[2], float H_2[2]  );
+        KalmanFilter (float a[][2], float X_init[][1], float P_init[][2], float R_1, float R_2, float Q_value, float H_1[2], float H_2[2] );
         KalmanFilter (float a[][2], float P_init[][2], float R_1, float R_2, float Q_value, float H_1[2], float H_2[2]  );
         void applyFilter(float Z_1, float Z_2);
         inline void getX (float X[][1]) {X[0][0] = this->X[0][0]; X[1][0] = this->X[1][0]; }
 
         void setXinit(float X_init[][1]);
+        void setA(float a[][2]);
         //void dispMat_2x2 (float mat[][2]);
         //void dispMat_2x1 (float mat[][1]);
         //void dispMat_1x2 (float mat[2]);
