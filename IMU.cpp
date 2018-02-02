@@ -178,6 +178,10 @@ void IMU::setR_GyBegin(const float raw[9])
   update_orientation_compass (raw, &AccPitch, &AccYaw);
   setR_Gy(compRoll,AccPitch,AccYaw);
 
+  GyRoll = compRoll;
+  GyPitch = AccPitch;
+  GyYaw = AccYaw;
+
 //  for (int i = 0; i < 3; i++)
 //    {
 //      for (int j = 0; j < 3; j++)

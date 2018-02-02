@@ -12,9 +12,8 @@
 #include <math.h>
 #include <Arduino.h>
 
-#define idealSampleTime  3000 // em micro segundos
+#define idealSampleTime  5000 // em micro segundos
 
-//#define T_Gy 0.005
 #define DX 3
 #define DY 3
 #define ND -(1<<16)
