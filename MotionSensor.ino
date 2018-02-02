@@ -3,7 +3,7 @@
 #include "IMU.h"
 
 #define sampleTime  2000 // em micro segundos
-#define  sendTime  5 // em milisegundos
+#define  sendTime  1000 // em milisegundos
 int cont = 0;
 /****************************************VARIÁVEIS DO FILTRO de KALMAN****************************************/
 float R_1 = 1; // acelerômetro
@@ -36,6 +36,13 @@ unsigned long previousTime3 = 0;
 unsigned long currentTime = 0;
 unsigned long currentTime2 = 0;
 unsigned long currentTime3 = 0;
+unsigned long T1 = 0;
+unsigned long T2 = 0;
+unsigned long calculationTime = 0;
+
+unsigned long timePrint = 0;
+unsigned long timePrint_begin = 0;
+unsigned long timePrint_end = 0;
 /************************************************************************************************************/
 
 void setup()
@@ -56,21 +63,25 @@ void setup()
      FilterRoll.setXinit( X_init_roll); // Os valores de CompasRoll, AccPitch e AccYaw foram calculados na função imu.setR_GyBegin();
      FilterPitch.setXinit(X_init_pitch);
      FilterYaw.setXinit(X_init_yaw);
+     
+     timePrint = 0;
+     calculationTime = 0;
+     T1 = micros();
 } 
 void loop() 
 {     
               currentTime = micros();
-              if (currentTime - previousTime >= sampleTime)
+              if (currentTime - previousTime >= (5000 - timePrint - calculationTime ))
               {
               /********************************************************************************/    
                    previousTime3 = micros(); 
                    mpu9250.doReadings();  
-                   //mpu9250.exibeLeituras(); 
+                  
                    
                    // Calcula o pitch e o yaw do acelerômetro
                    // Calcula o roll, pitch e yaw do giroscópio                  
-                   imu.updateOrientation(mpu9250.getMeasures()); 
-                   imu.printOrientation();
+                   imu.updateOrientation(mpu9250.getMeasures());
+             
                    // Faz a fusão do pitch e do yaw entre acelerômetro e giroscópio
                    FilterPitch.applyFilter((float)imu.getAccPitch(),(float)imu.getGyPitch());
                    FilterYaw.applyFilter((float)imu.getAccYaw(),(float)imu.getGyYaw());                 
@@ -81,45 +92,54 @@ void loop()
                    imu.update_orientation_compass(mpu9250.getMeasures(),&X_pich[0][0],&X_yaw[0][0]);
                     
                    //Fusão entre os rolls do magnetômetro e giroscópio
-                   //Serial.print ("GyRoll: "); Serial.println ((float)imu.getGyRoll());
-                   //Serial.print ("compRoll: "); Serial.println ((float)imu.getcompRoll());
                    FilterRoll.applyFilter((float)imu.getcompRoll(),(float)imu.getGyRoll());
                    FilterRoll.getX(X_roll);
-                   //Serial.print("RollFilter: ");
-                   //Serial.println (X_roll[0][0]);
-
-                   
+                                   
                    //Atualiza a posição atual
                    cont++;
                    if (cont == 1000)
                    {
                       imu.setR_Gy (X_roll[0][0],X_pich[0][0],X_yaw[0][0]);
-                   //imu.setR_Gy ((float)imu.getcompRoll(),(float)imu.getAccPitch(),(float)imu.getAccYaw());
+                    //imu.setR_Gy ((float)imu.getcompRoll(),(float)imu.getAccPitch(),(float)imu.getAccYaw());
                       cont = 0;                  
                    }
+                   currentTime3 = micros();
+                   calculationTime = currentTime3 - previousTime3;
 
 
+                   Serial.print ("T: ");
+                   T2 = micros();
+                   Serial.println (T2 - T1);
+                   T1 = T2;
+             /********************************************************************************/       
+                previousTime =  micros();
+              }
+
+              currentTime2 = millis();              
+              if (currentTime2 - previousTime2 >= sendTime)
+              {
+                timePrint_begin = micros ();
+               /********************************************************************************/ 
+                //mpu9250.exibeLeituras();     
+                 // imu.printOrientation();
                    Serial.print ((X_roll[0][0]*180/3.14)-21);
                    Serial.print ("X");
                    Serial.print (X_pich[0][0]*180/3.14);
                    Serial.print ("Y");
                    Serial.print (X_yaw[0][0]*180/3.14); 
-                   Serial.println ("Z");
-                   //Serial.print(mpu9250.getGyZ());  
-                   //Serial.print (",   T:");
-                   currentTime3 = micros();
-                   //Serial.println (currentTime3 - previousTime3);
-                   
-                  // if ((currentTime - previousTime) > (sampleTime + sampleTime/100)) {
-                  //    Serial.print ("Muito Longo: ");
-                  //    Serial.println (currentTime - previousTime);
-                  // }
-             /********************************************************************************/       
-                previousTime =  micros();
+                   Serial.println("Z");             
+             /********************************************************************************/     
+               previousTime2 = millis();  
+               timePrint_end = micros();
+               timePrint = timePrint_end - timePrint_begin;
               }
+              else
+              {
+                timePrint = 0;
+              }
+              
         
 }
-
 
 
 
