@@ -32,13 +32,15 @@ KalmanFilter FilterYaw   (A, P_init,  R_1,  R_2, Q_value,  H_1,  H_2);
 /*************************************** VARIAVEIS PARA CONTROLE DE TEMPO*************************************/
 unsigned long previousTime = 0;
 unsigned long previousTime2 = 0;
-unsigned long previousTime3 = 0;
 unsigned long currentTime = 0;
 unsigned long currentTime2 = 0;
-unsigned long currentTime3 = 0;
+
 unsigned long T1 = 0;
 unsigned long T2 = 0;
+
 unsigned long calculationTime = 0;
+unsigned long calculationTime_begin = 0;
+unsigned long calculationTime_end = 0;
 
 unsigned long timePrint = 0;
 unsigned long timePrint_begin = 0;
@@ -60,24 +62,25 @@ void setup()
      X_init_pitch[0][0] = imu.getAccPitch();
      X_init_yaw[0][0] =   imu.getAccYaw();
      
-     FilterRoll.setXinit( X_init_roll); // Os valores de CompasRoll, AccPitch e AccYaw foram calculados na função imu.setR_GyBegin();
+     FilterRoll.setXinit(X_init_roll); // Os valores de CompasRoll, AccPitch e AccYaw foram calculados na função imu.setR_GyBegin();
      FilterPitch.setXinit(X_init_pitch);
      FilterYaw.setXinit(X_init_yaw);
      
      timePrint = 0;
      calculationTime = 0;
      T1 = micros();
+     previousTime = micros();
+     previousTime2 = micros ();
 } 
 void loop() 
 {     
               currentTime = micros();
-              if (currentTime - previousTime >= (5000 - timePrint - calculationTime ))
+              if (currentTime - previousTime >= (3000 - timePrint - calculationTime ))
               {
               /********************************************************************************/    
-                   previousTime3 = micros(); 
+                   calculationTime_begin = micros(); 
                    mpu9250.doReadings();  
-                  
-                   
+                                    
                    // Calcula o pitch e o yaw do acelerômetro
                    // Calcula o roll, pitch e yaw do giroscópio                  
                    imu.updateOrientation(mpu9250.getMeasures());
@@ -99,12 +102,12 @@ void loop()
                    cont++;
                    if (cont == 1000)
                    {
-                      imu.setR_Gy (X_roll[0][0],X_pich[0][0],X_yaw[0][0]);
-                    //imu.setR_Gy ((float)imu.getcompRoll(),(float)imu.getAccPitch(),(float)imu.getAccYaw());
+                      imu.setR_Gy (X_roll[0][0],X_pich[0][0],X_yaw[0][0]); // iguala a posição do giroscópio ao do filtro
+                    //imu.setR_Gy ((float)imu.getcompRoll(),(float)imu.getAccPitch(),(float)imu.getAccYaw()); // iguala a posição do giroscópio ao do acelerômetro
                       cont = 0;                  
                    }
-                   currentTime3 = micros();
-                   calculationTime = currentTime3 - previousTime3;
+                   calculationTime_end = micros();
+                   calculationTime = calculationTime_end - calculationTime_begin;
 
 
                    Serial.print ("T: ");
@@ -121,7 +124,7 @@ void loop()
                 timePrint_begin = micros ();
                /********************************************************************************/ 
                 //mpu9250.exibeLeituras();     
-                 // imu.printOrientation();
+                //imu.printOrientation();
                    Serial.print ((X_roll[0][0]*180/3.14)-21);
                    Serial.print ("X");
                    Serial.print (X_pich[0][0]*180/3.14);
