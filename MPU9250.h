@@ -47,8 +47,10 @@ class MPU9250
         float Temp;
         float measures[10];
         float compassScale = 0.6;
-        float compassTransfMatrix[3][3] = {{6.414,0.453,-0.066},{0.757,6.379,2.119},{-1.264,-0.905,4.469}};
-        float compassBias[3] = {22.498,-21.015,-26.479};
+        //float compassTransfMatrix[3][3] = {{6.414,0.453,-0.066},{0.757,6.379,2.119},{-1.264,-0.905,4.469}};
+        float compassTransfMatrix[3][3] = {{5.12,0.138,-0.539},{-0.901,5.379,1.209},{-0.398,-0.317,4.815}};
+       // float compassBias[3] = {22.498,-21.015,-26.479};
+        float compassBias[3] = {32.041,-21.346,-12.804};
         void GyBiasCalibration (void);
 
         void sendbyte(byte device,byte address,byte value);
